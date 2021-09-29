@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CheapLoc;
 using Dalamud.Configuration;
 using Dalamud.Configuration.Internal;
+using Dalamud.Game.Gui.ServerInfo;
 using Dalamud.Game.Text;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
@@ -25,6 +26,9 @@ namespace Dalamud.Interface.Internal.Windows
         private const float MinScale = 0.3f;
         private const float MaxScale = 2.0f;
 
+        private const int MinPadding = 5;
+        private const int MaxPadding = 100;
+
         private readonly string[] languages;
         private readonly string[] locLanguages;
         private int langIndex;
@@ -38,6 +42,8 @@ namespace Dalamud.Interface.Internal.Windows
         private bool doCfChatMessage;
 
         private float globalUiScale;
+        private int serverInfoGuiSpacing;
+        private bool doServerInfoPreview;
         private bool doToggleUiHide;
         private bool doToggleUiHideDuringCutscenes;
         private bool doToggleUiHideDuringGpose;
@@ -164,6 +170,13 @@ namespace Dalamud.Interface.Internal.Windows
             ImGui.GetIO().FontGlobalScale = configuration.GlobalUiScale;
             this.thirdRepoList = configuration.ThirdRepoList.Select(x => x.Clone()).ToList();
             this.devPluginLocations = configuration.DevPluginLoadLocations.Select(x => x.Clone()).ToList();
+
+            if (this.doServerInfoPreview)
+            {
+                Service<ServerInfoGui>.Get().RemoveText(0xB00BFACE);
+                Service<ServerInfoGui>.Get().RemoveText(0xFACEB00B);
+                this.doServerInfoPreview = false;
+            }
         }
 
         /// <inheritdoc/>
@@ -261,6 +274,38 @@ namespace Dalamud.Interface.Internal.Windows
                 ImGui.GetIO().FontGlobalScale = this.globalUiScale;
 
             ImGui.TextColored(this.hintTextColor, Loc.Localize("DalamudSettingsGlobalUiScaleHint", "Scale all XIVLauncher UI elements - useful for 4K displays."));
+
+            ImGuiHelpers.ScaledDummy(10, 16);
+
+            ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3);
+            ImGui.Text(Loc.Localize("DalamudSettingsServerInfoSpacing", "\"Server Info\" Plugin UI Element Spacing"));
+            ImGui.SameLine();
+            ImGui.SetCursorPosY(ImGui.GetCursorPosY() - 3);
+            if (ImGui.Button("Reset##DalamudSettingsServerInfoSpacingReset"))
+            {
+                this.serverInfoGuiSpacing = 30;
+                Service<ServerInfoGui>.Get().ElementPadding = this.serverInfoGuiSpacing;
+            }
+
+            if (ImGui.SliderInt("##DalamudSettingsServerInfoSpacingDrag", ref this.serverInfoGuiSpacing, MinPadding, MaxPadding))
+                Service<ServerInfoGui>.Get().ElementPadding = this.serverInfoGuiSpacing;
+
+            ImGui.TextColored(this.hintTextColor, Loc.Localize("DalamudSettingsServerInfoUiHint", "Modify spacing between plugin additions in the \"Server Info\" in-game UI element."));
+
+            if (ImGui.Checkbox(Loc.Localize("DalamudSettingsServerInfoPreview", "Add two Server Info elements to preview spacing with"), ref this.doServerInfoPreview))
+            {
+                var svc = Service<ServerInfoGui>.Get();
+                if (this.doServerInfoPreview)
+                {
+                    svc.SetText(0xFACEB00B, "Element One");
+                    svc.SetText(0xB00BFACE, "Element Two");
+                }
+                else
+                {
+                    svc.RemoveText(0xFACEB00B);
+                    svc.RemoveText(0xB00BFACE);
+                }
+            }
 
             ImGuiHelpers.ScaledDummy(10, 16);
 

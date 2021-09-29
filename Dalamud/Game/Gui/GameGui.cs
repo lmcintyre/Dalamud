@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 
 using Dalamud.Game.Gui.FlyText;
 using Dalamud.Game.Gui.PartyFinder;
+using Dalamud.Game.Gui.ServerInfo;
 using Dalamud.Game.Gui.Toast;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Hooking;
@@ -451,6 +452,7 @@ namespace Dalamud.Game.Gui
             Service<ToastGui>.Get().Dispose();
             Service<FlyTextGui>.Get().Dispose();
             Service<PartyFinderGui>.Get().Dispose();
+            Service<ServerInfoGui>.Get().Dispose();
             this.setGlobalBgmHook.Dispose();
             this.handleItemHoverHook.Dispose();
             this.handleItemOutHook.Dispose();

@@ -8,25 +8,8 @@ using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Serilog;
 
-namespace Dalamud.Game.Gui
+namespace Dalamud.Game.Gui.ServerInfo
 {
-    internal unsafe struct ServerInfoGuiData
-    {
-        public AtkTextNode* TextNode;
-        public uint NodeId;
-        public string Text;
-        public bool Dirty;
-        public bool Added;
-        public bool ShouldBeRemoved;
-
-        public override bool Equals(object? obj)
-        {
-            if (obj is ServerInfoGuiData other)
-                return this.TextNode == other.TextNode && this.NodeId == other.NodeId;
-            return false;
-        }
-    }
-
     /// <summary>
     /// This class handles interacting with the native "Server Info" UI element.
     /// </summary>
@@ -34,9 +17,13 @@ namespace Dalamud.Game.Gui
     [InterfaceVersion("1.0")]
     public unsafe class ServerInfoGui : IDisposable
     {
-        private const int elementPadding = 30;
-        private GameGui gameGui;
-        private List<ServerInfoGuiData> elementList;
+        /// <summary>
+        /// The amount of padding between Server Info UI elements.
+        /// </summary>
+        internal int ElementPadding = 30;
+
+        private readonly GameGui gameGui;
+        private readonly List<ServerInfoGuiData> elementList;
 
         internal ServerInfoGui(GameGui gameGui)
         {
@@ -151,7 +138,7 @@ namespace Dalamud.Game.Gui
                     data.Added = this.AddNode(data.TextNode);
                 }
 
-                runningXPos -= data.TextNode->AtkResNode.Width + elementPadding;
+                runningXPos -= data.TextNode->AtkResNode.Width + this.ElementPadding;
                 data.TextNode->AtkResNode.SetPositionFloat(runningXPos, 2);
                 // runningXPos -= (ushort)(data.TextNode->AtkResNode.Width + elementPadding);
 
