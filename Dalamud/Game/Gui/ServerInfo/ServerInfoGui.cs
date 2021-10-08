@@ -32,6 +32,13 @@ namespace Dalamud.Game.Gui.ServerInfo
             this.elementList = new List<ServerInfoGuiData>();
         }
 
+        /// <summary>
+        /// Sets the given text on a text node in the Server Info in-game UI element. If a node does not
+        /// exist with the given ID, it will be created. If a node does exist with the given ID, its text
+        /// will be updated. Node IDs must be greater than 1000 in order to prevent collision with game IDs.
+        /// </summary>
+        /// <param name="nodeId">The unique node ID for this text element.</param>
+        /// <param name="text">The text to display.</param>
         public void SetText(uint nodeId, string text)
         {
             if (nodeId < 1000)
@@ -78,6 +85,10 @@ namespace Dalamud.Game.Gui.ServerInfo
             }
         }
 
+        /// <summary>
+        /// Removes the node with the given unique ID from the Server Info in-game UI element.
+        /// </summary>
+        /// <param name="nodeId">The unique node ID of the node to remove.</param>
         public void RemoveText(uint nodeId)
         {
             var index = -1;
